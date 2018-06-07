@@ -5,14 +5,9 @@ import get from "lodash/get";
 import deepcopy from "deepcopy";
 import { deepEquals } from "react-jsonschema-form/lib/utils";
 import predicate from "predicate";
+import Engine from "json-rules-engine-simplified";
 
 predicate.isForDropdown = predicate.curry((val, match) => {
-  console.log(
-    "$$ isForDropdown",
-    val,
-    match,
-    !!val && predicate.equal(val.value === match)
-  );
   return !!val && predicate.equal(val.value === match);
 });
 
@@ -61,13 +56,7 @@ export function normRules(rules) {
   });
 }
 
-export default function rulesRunner(
-  schema,
-  uiSchema,
-  rules,
-  Engine,
-  extraActions
-) {
+export default function rulesRunner(schema, uiSchema, rules, extraActions) {
   // class MyEngine extends Engine {
   //
   // }
@@ -108,7 +97,6 @@ export default function rulesRunner(
       prevFormData
     ).then(conf => {
       if (deepEquals(conf.formData, formData)) {
-        console.log("$$ rules formData has not changed");
         return conf;
       } else {
         return doRunRules(

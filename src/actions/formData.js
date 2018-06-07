@@ -11,19 +11,12 @@ export default function formData(
   prevFormData
 ) {
   Object.keys(params).forEach(field => {
-    console.log("$$ setFormData", field);
     let value = params[field];
 
     // Special case, to get the value from formData
     if (hasConfig(value)) {
       const config = getConfig(value);
       value = config.value || getValueFromData(formData, value);
-      console.log("$$ setFormData value", value);
-
-      // Only execute this if the value has actually changed
-      // if (!isEqual(get(prevFormData, config.changed), get(formData, config.changed))) {
-      // const value = valueParser(valueFrom);
-      // set(formData, field, value);
 
       const toSchema = get(schema, `properties.${field}`);
 
@@ -36,7 +29,6 @@ export default function formData(
       }
 
       set(formData, field, value);
-      // }
     }
   });
 }

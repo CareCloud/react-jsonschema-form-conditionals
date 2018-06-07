@@ -16,12 +16,10 @@ function doAppend(uiSchema, params, formData) {
     let appendVal = params[field];
     let fieldUiSchema = uiSchema[field];
 
-    console.log("$$ appendVal", appendVal);
     // Special case, to get the value from formData
     if (hasConfig(appendVal)) {
       appendVal = getValueFromData(formData, appendVal);
     }
-    console.log("$$ fieldUiSchema", fieldUiSchema);
 
     if (!fieldUiSchema) {
       uiSchema[field] = appendVal;
