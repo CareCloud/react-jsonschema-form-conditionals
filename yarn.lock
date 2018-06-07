@@ -3850,9 +3850,9 @@ json-loader@^0.5.4:
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/json-loader/-/json-loader-0.5.7.tgz#dca14a70235ff82f0ac9a3abeb60d337a365185d"
 
-json-rules-engine-simplified@^0.1.11:
-  version "0.1.14"
-  resolved "https://registry.yarnpkg.com/json-rules-engine-simplified/-/json-rules-engine-simplified-0.1.14.tgz#09f429fe41bd4ca7bff99abc4f2eda011084ae59"
+json-rules-engine-simplified@^0.1.16:
+  version "0.1.16"
+  resolved "https://registry.yarnpkg.com/json-rules-engine-simplified/-/json-rules-engine-simplified-0.1.16.tgz#6a576484749d95e0d81a78cdcf85651d350d40dd"
   dependencies:
     deep-equal "1.0.1"
     predicate "1.2.0"
