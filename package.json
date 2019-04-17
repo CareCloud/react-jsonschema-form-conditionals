@@ -1,5 +1,5 @@
 {
-  "name": "react-jsonschema-form-conditionals",
+  "name": "@carecloud/form-conditionals",
   "description": "Extension of react-jsonschema-form with conditional field support",
   "private": false,
   "author": "mavarazy@gmail.com",
@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "deepcopy": "^0.6.3",
+    "lodash": "^4.17.10",
     "selectn": "^1.1.2"
   },
   "devDependencies": {

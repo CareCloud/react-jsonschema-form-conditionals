@@ -1,15 +1,45 @@
 import execute from "./actions";
+import isEqual from "lodash/isEqual";
+import findKey from "lodash/findKey";
+import get from "lodash/get";
 import deepcopy from "deepcopy";
 import { deepEquals } from "react-jsonschema-form/lib/utils";
+import predicate from "predicate";
 
-function doRunRules(engine, formData, schema, uiSchema, extraActions = {}) {
+predicate.isForDropdown = predicate.curry((val, match) => {
+  console.log(
+    "$$ isForDropdown",
+    val,
+    match,
+    !!val && predicate.equal(val.value === match)
+  );
+  return !!val && predicate.equal(val.value === match);
+});
+
+function doRunRules(
+  engine,
+  formData,
+  schema,
+  uiSchema,
+  extraActions = {},
+  prevFormData
+) {
   let schemaCopy = deepcopy(schema);
   let uiSchemaCopy = deepcopy(uiSchema);
   let formDataCopy = deepcopy(formData);
 
   let res = engine.run(formData).then(events => {
-    events.forEach(event =>
-      execute(event, schemaCopy, uiSchemaCopy, formDataCopy, extraActions)
+    return Promise.all(
+      events.map(event =>
+        execute(
+          event,
+          schemaCopy,
+          uiSchemaCopy,
+          formDataCopy,
+          extraActions,
+          prevFormData
+        )
+      )
     );
   });
 
@@ -38,22 +68,47 @@ export default function rulesRunner(
   Engine,
   extraActions
 ) {
-  let engine = new Engine([], schema);
-  normRules(rules).forEach(rule => engine.addRule(rule));
+  // class MyEngine extends Engine {
+  //
+  // }
 
-  return formData => {
+  // normRules(rules).forEach(rule => engine.addRule(rule));
+
+  return (formData, prevFormData) => {
     if (formData === undefined || formData === null) {
       return Promise.resolve({ schema, uiSchema, formData });
     }
+    rules = normRules(deepcopy(rules)).filter(({ conditions }) => {
+      const fieldName = findKey(conditions, (value, key) => {
+        return (
+          value === "changed" || (typeof value === "object" && value.changed)
+        );
+      });
+
+      if (fieldName) {
+        if (!isEqual(get(formData, fieldName), get(prevFormData, fieldName))) {
+          conditions[fieldName] = { not: "empty" };
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    let engine = new Engine(normRules(rules), schema);
 
     return doRunRules(
       engine,
       formData,
       schema,
       uiSchema,
-      extraActions
+      extraActions,
+      prevFormData
     ).then(conf => {
       if (deepEquals(conf.formData, formData)) {
+        console.log("$$ rules formData has not changed");
         return conf;
       } else {
         return doRunRules(
@@ -61,7 +116,8 @@ export default function rulesRunner(
           conf.formData,
           schema,
           uiSchema,
-          extraActions
+          extraActions,
+          prevFormData
         );
       }
     });
